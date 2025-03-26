@@ -64,8 +64,10 @@ alias \
 	tremc="tremc" \
 	tremt="td-toggle" \
 	YT="youtube-viewer" \
-	sdn="shutdown_wrapper" \
-	reboot="reboot_wrapper" \
+	# sdn="shutdown_wrapper" \
+	sdn="shutdown -h now" \
+	# reboot="reboot_wrapper" \
+	reboot="systemctl reboot" \
 	e="$EDITOR" \
 	v="$EDITOR" \
 	p="pacman" \
