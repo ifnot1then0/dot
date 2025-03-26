@@ -97,7 +97,7 @@ directories_local_repo=(
     "$HOME/.config/qutebrowser:surf"
     "$HOME/.local/share/password-store:pass"
     "$HOME/.local/share/newsboat:newsboat"
-    "$HOME/.local/bin:bin"
+    "$HOME/.local/usr:usr"
     "$HOME/dls:dls"
     "$HOME/fls/crs:crs"
     "$HOME/fls/doc:doc"

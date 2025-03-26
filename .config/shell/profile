@@ -6,6 +6,9 @@
 # Add all directories in `~/.local/bin` to $PATH
 export PATH="$PATH:$(find ~/.local/bin -type d | paste -sd ':' -)"
 
+# Add all directories in `~/.local/usr` to $PATH
+export PATH="$PATH:$(find ~/.local/usr -type d | paste -sd ':' -)"
+
 unsetopt PROMPT_SP 2>/dev/null
 
 # Default programs:
