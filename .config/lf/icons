@@ -1,0 +1,104 @@
+# ln = link
+# or = orphan
+# tw = sticky other writable
+# ow = other writable
+# st = sticky
+# di = directory
+# so = sock
+# ex = exec
+# fi = file
+
+di	
+fi	
+tw	
+ow	
+ln	
+or	
+ex	
+*.conf	
+*.config 
+*.key	
+*.rev	
+*.pack	
+*.cert	
+*.txt	
+*.mom	
+*.me	
+*.ms	
+*.avif	
+*.png	
+*.webp	
+*.ico	
+*.jpg	
+*.jpe	
+*.jpeg	
+*.gif	
+*.svg	
+*.tif	
+*.tiff	
+*.xcf	
+*.html	
+*.xml	
+*.gpg	
+*.git	
+*.css	
+*.pdf	
+*.djvu	
+*.epub	
+*.csv	
+*.xlsx	
+*.tex	
+*.md	
+*.win	
+*.r	
+*.R	
+*.rmd	
+*.Rmd	
+*.m	
+*.mp3	
+*.opus	
+*.ogg	
+*.m4a	
+*.flac	
+*.wav	
+*.mkv	
+*.mp4	
+*.webm	
+*.mpeg	
+*.avi	
+*.mov	
+*.mpg	
+*.wmv	
+*.m4b	
+*.flv	
+*.zip	
+*.rar	
+*.7z	
+*.tar	
+*.z64	
+*.v64	
+*.n64	
+*.gba	
+*.nes	
+*.gdi	
+*.1	
+*.nfo	
+*.info	
+*.log	
+*.iso	
+*.img   
+*.bib   
+*.ged   
+*.part  
+*.torrent 
+*.magnet 
+*.c	
+*.vim	
+*.rss	
+*.jar   
+*.java	
+*.js	
+*.json	
+*.rs	
+*.jsx	
+*.py	

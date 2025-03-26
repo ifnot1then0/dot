@@ -1,0 +1,151 @@
+#!/bin/bash
+
+# Define the log file location
+LOGFILE="$HOME/log/git_push.log"
+
+# Configuration for SSH key and pass domain
+SSH_KEY="$HOME/.ssh/id_rsa"   # Change if your SSH key is different
+PASS_KEY="key"          # Replace with your actual pass domain (e.g., "ssh")
+
+# Ensure the log file's directory exists
+mkdir -p "$(dirname "$LOGFILE")"
+
+# List of repositories (directory:branch)
+REPOS=(
+    "$HOME/.config/bookmenu:bookmenu"
+    "$HOME/.config/qutebrowser:surf"
+    "$HOME/.local/share/password-store:pass"
+    "$HOME/.local/share/newsboat:newsboat"
+    "$HOME/.local/bin:bin"
+    "$HOME/dls:dls"
+    "$HOME/fls/crs:crs"
+    "$HOME/fls/doc:doc"
+    "$HOME/fls/jnk:jnk"
+    "$HOME/fls/note:note"
+    "$HOME/gms/KSP:KSP"
+    "$HOME/gms/minecraft:minecraft"
+    "$HOME/gms/RDR2:RDR2"
+    "$HOME/med/aud:aud"
+    "$HOME/med/mus:mus"
+    "$HOME/med/vid:vid"
+    "$HOME/pic:pic"
+    "$HOME/tmp:tmp"
+    "$HOME/prg/dotgit/bash:bash"
+    "$HOME/prg/dotgit/python:python"
+    "$HOME/prg/dotgit/web:web"
+#    "$HOME/prg/cabs:cabs"
+)
+
+# Function to log messages
+log() {
+    local message="$1"
+    local type="$2"
+    if [ "$type" = "error" ]; then
+        # Print to terminal and append to log file
+        echo "$message" | tee -a "$LOGFILE"
+    else
+        # Only append to log file
+        echo "$message" >> "$LOGFILE"
+    fi
+}
+
+# Check for required tools
+if ! command -v expect > /dev/null; then
+    log "Error: 'expect' is required but not installed. Please install it." error
+    exit 1
+fi
+
+# Start SSH agent if not running
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    log "Starting SSH agent..."
+    eval "$(ssh-agent -s)" >> "$LOGFILE" 2>&1
+fi
+
+# Retrieve passphrase from pass
+log "Retrieving passphrase from pass..."
+PASSPHRASE=$(pass show "$PASS_KEY" 2>> "$LOGFILE")
+if [ $? -ne 0 ]; then
+    log "Error: Failed to retrieve passphrase from pass. Check if '$PASS_KEY' exists." error
+    exit 1
+fi
+
+# Add SSH key using expect
+log "Adding SSH key..."
+export PASSPHRASE
+expect <<EOF >> "$LOGFILE" 2>&1
+spawn ssh-add $SSH_KEY
+expect {
+    "Enter passphrase for $SSH_KEY:" {
+        send "\$env(PASSPHRASE)\n"
+        expect eof
+    }
+    eof {
+        # Key added or already present
+    }
+}
+EOF
+
+if [ $? -eq 0 ]; then
+    log "SSH key added successfully or already present."
+else
+    log "Error: Failed to add SSH key." error
+    unset PASSPHRASE
+    exit 1
+fi
+unset PASSPHRASE
+
+# Log the start of the git push process
+log "Starting git push for all repositories at $(date)"
+
+# Iterate over each repository
+for repo in "${REPOS[@]}"; do
+    dir="${repo%%:*}"      # Extract directory path
+    branch="${repo##*:}"   # Extract branch name
+    if [ -d "$dir" ]; then
+        if [ -d "$dir/.git" ]; then
+            log "Processing $dir on branch $branch"
+            cd "$dir" || { log "$branch --failed (cannot change directory)" error; continue; }
+            # Check if on the correct branch
+            current_branch=$(git rev-parse --abbrev-ref HEAD 2>> "$LOGFILE")
+            if [ "$current_branch" != "$branch" ]; then
+                log "$branch --failed (not on branch $branch, on $current_branch)" error
+                continue
+            fi
+            # Stage changes
+            git add . >> "$LOGFILE" 2>&1
+            if [ $? -ne 0 ]; then
+                log "$branch --failed (git add error)" error
+                continue
+            fi
+            # Attempt to commit
+            git commit -m "updated" >> "$LOGFILE" 2>&1
+            commit_status=$?
+            if [ $commit_status -eq 0 ]; then
+                log "Committed changes in $dir"
+            elif [ $commit_status -eq 1 ]; then
+                log "No changes to commit in $dir"
+            else
+                log "$branch --failed (commit error)" error
+                continue
+            fi
+            # Check if remote exists and push
+            if git remote | grep -q "^local$" 2>> "$LOGFILE"; then
+                git push local "$branch" >> "$LOGFILE" 2>&1
+                if [ $? -eq 0 ]; then
+                    log "Successfully pushed to local/$branch in $dir"
+                else
+                    log "$branch --failed (push error)" error
+                fi
+            else
+                log "$branch --failed (remote 'local' does not exist)" error
+            fi
+        else
+            log "$branch --failed (not a Git repository)" error
+        fi
+    else
+        log "$branch --failed (directory does not exist)" error
+    fi
+done
+
+# Log the end of the process
+log "Finished git push for all repositories at $(date)"

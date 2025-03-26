@@ -1,0 +1,2 @@
+#!/bin/sh
+export DISPLAY=:0; sleep 1; xdotool mousemove 260 110; sleep 1; xdotool mousemove 1680 130

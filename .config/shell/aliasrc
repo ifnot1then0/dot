@@ -1,0 +1,84 @@
+#!/bin/sh
+
+# Use neovim for vim if present.
+[ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d"
+
+# Use $XINITRC variable if file exists.
+[ -f "$XINITRC" ] && alias startx="startx $XINITRC"
+
+[ -f "$MBSYNCRC" ] && alias mbsync="mbsync -c $MBSYNCRC"
+
+# sudo not required for some system commands
+for command in mount umount sv pacman updatedb su shutdown poweroff reboot ; do
+	alias $command="sudo $command"
+done; unset command
+
+se() {
+	choice="$(find ~/.local/bin -mindepth 1 -printf '%P\n' | fzf)"
+	[ -f "$HOME/.local/bin/$choice" ] && $EDITOR "$HOME/.local/bin/$choice";
+}
+
+# Verbosity and settings that you pretty much just always are going to want.
+alias \
+	cp="cp -iv" \
+	mv="mv -iv" \
+	rm="rm -vI" \
+	bc="bc -ql" \
+	py="python" \
+	g="git" \
+	ga="git add . ; git status" \
+	gs="git status" \
+	gc="git commit -m" \
+	rsync="rsync -vrPlu" \
+	mkd="mkdir -pv" \
+	mke="chmod +x " \
+	mkf="touch" \
+	yt="yt-dlp --embed-metadata -i" \
+	yta="yt -x -f bestaudio/best" \
+	ytt="yt --skip-download --write-thumbnail" \
+	ffmpeg="ffmpeg -hide_banner" \
+	ipLAN="ip addr | grep inet" \
+	ipWAN="curl -s ipv4.icanhazip.com" \
+	myIP="ipinfo myip" \
+	speed="speedtest -A" \
+	notes="$EDITOR $HOME/.local/share/nvim/vimwiki/index.md" \
+	mail="proton-mail 1>/dev/null 2>/dev/null &" \
+	viewallprograms="pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'" \
+	shortenHistory="py $HOME/prg/dotgit/python/system_scripts/shorten_history_file.py < $HOME/.cache/zsh/history > hist.tmp && mv hist.tmp $HOME/.cache/zsh/history"
+
+# Colorize commands when possible.
+alias \
+	ls="ls -hN --color=auto --group-directories-first" \
+	grep="grep --color=auto" \
+	diff="diff --color=auto" \
+	ccat="highlight --out-format=ansi" \
+	ip="ip -color=auto"
+
+# These common commands are just too long! Abbreviate them.
+alias \
+	lf="lfub" \
+	q="exit" \
+	cl="clear" \
+	ka="killall" \
+	trem="transmission-remote" \
+	tremc="tremc" \
+	tremt="td-toggle" \
+	YT="youtube-viewer" \
+	sdn="shutdown_wrapper" \
+	reboot="reboot_wrapper" \
+	e="$EDITOR" \
+	v="$EDITOR" \
+	p="pacman" \
+	y="yay" \
+	update="sb-popupgrade" \
+	# update="pacman -Syu --noconfirm ; yay -Syu --noconfirm" \
+	xi="sudo xbps-install" \
+	xr="sudo xbps-remove -R" \
+	xq="xbps-query" \
+	z="zathura"
+
+alias \
+	magit="nvim -c MagitOnly" \
+	ref="shortcuts >/dev/null; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc ; source ${XDG_CONFIG_HOME:-$HOME/.config}/shell/zshnameddirrc" \
+	KSP="rm /home/code/gms/KSP/PartDatabase.cfg & rm /home/code/gms/KSP/GameData/ModuleManager.ConfigCache & rm /home/code/gms/KSP/GameData/ModuleManager.ConfigSHA & /home/code/gms/KSP/KSP.x86_64" \
+	KSP_Test="rm /home/code/gms/KSP_Test/PartDatabase.cfg & rm /home/code/gms/KSP_Test/GameData/ModuleManager.ConfigCache & rm /home/code/gms/KSP_Test/GameData/ModuleManager.ConfigSHA & /home/code/gms/KSP_Test/KSP.x86_64" \

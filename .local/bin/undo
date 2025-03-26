@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# Navigate to the repository root
+cd "$(git rev-parse --show-toplevel)" || {
+    echo "Error: Cannot determine repository root."
+    exit 1
+}
+
+# Check if inside a Git repository
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "Error: Not inside a Git repository."
+    exit 1
+fi
+
+# Get deleted files
+mapfile -t deleted_files < <(git status --porcelain | grep '^ D' | cut -c 4-)
+
+# Check if there are deleted files
+if [ ${#deleted_files[@]} -eq 0 ]; then
+    echo "No deleted files to restore."
+    exit 0
+fi
+
+# List files with numbers for selection
+echo "Deleted files available to restore:"
+for i in "${!deleted_files[@]}"; do
+    printf "%d .    %s\n" "$((i+1))" "${deleted_files[$i]}"
+done
+
+# Prompt for selection
+echo "Enter the numbers of files to restore (e.g., 1 3), or press Enter for all:"
+read -a selections
+
+if [ ${#selections[@]} -eq 0 ]; then
+    # Restore all if no selection
+    selected_files=("${deleted_files[@]}")
+else
+    selected_files=()
+    for num in "${selections[@]}"; do
+        if [[ $num =~ ^[0-9]+$ ]] && [ "$num" -ge 1 ] && [ "$num" -le "${#deleted_files[@]}" ]; then
+            selected_files+=("${deleted_files[$num-1]}")
+        else
+            echo "Invalid selection: $num"
+        fi
+    done
+fi
+
+# Confirm and restore
+if [ ${#selected_files[@]} -gt 0 ]; then
+    echo "Restoring:"
+    printf '%s\n' "${selected_files[@]}"
+    git checkout -- "${selected_files[@]}"
+    echo "Files restored successfully."
+else
+    echo "No valid files selected."
+    exit 1
+fi
