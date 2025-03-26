@@ -1,0 +1,2 @@
+#!/bin/bash
+setbg $HOME/.local/share/*.png
