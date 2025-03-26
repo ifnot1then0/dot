@@ -150,6 +150,43 @@ done
 log "Restore operation complete"
 echo "Restore operation complete."
 
+# Set proper permissions for restored items
+log "Setting permissions for restored items"
+
+# For $HOME/.ssh
+if [ -d "$HOME/.ssh" ]; then
+  chmod 700 "$HOME/.ssh"
+  find "$HOME/.ssh" -type f -not -name "*.pub" -exec chmod 600 {} \;
+  find "$HOME/.ssh" -type f -name "*.pub" -exec chmod 644 {} \;
+  log "Set permissions for $HOME/.ssh"
+fi
+
+# For $HOME/.gnupg
+if [ -d "$HOME/.gnupg" ]; then
+  chmod 700 "$HOME/.gnupg"
+  find "$HOME/.gnupg" -type f -exec chmod 600 {} \;
+  log "Set permissions for $HOME/.gnupg"
+fi
+
+# For $HOME/.local/share/password-store
+if [ -d "$HOME/.local/share/password-store" ]; then
+  chmod 700 "$HOME/.local/share/password-store"
+  find "$HOME/.local/share/password-store" -type f -exec chmod 600 {} \;
+  log "Set permissions for $HOME/.local/share/password-store"
+fi
+
+# For /etc/hosts
+if [ -f "/etc/hosts" ]; then
+  sudo chmod 644 "/etc/hosts"
+  log "Set permissions for /etc/hosts"
+fi
+
+# For /etc/ssh/sshd_config
+if [ -f "/etc/ssh/sshd_config" ]; then
+  sudo chmod 644 "/etc/ssh/sshd_config"
+  log "Set permissions for /etc/ssh/sshd_config"
+fi
+
 # Unmount the device
 echo "Unmounting $MOUNT_POINT..."
 if ! sudo umount "$MOUNT_POINT"; then
