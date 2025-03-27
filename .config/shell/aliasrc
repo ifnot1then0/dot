@@ -54,6 +54,9 @@ alias \
 	ccat="highlight --out-format=ansi" \
 	ip="ip -color=auto"
 
+# update="pacman -Syu --noconfirm ; yay -Syu --noconfirm" \
+# reboot="reboot_wrapper" \
+# sdn="shutdown_wrapper" \
 # These common commands are just too long! Abbreviate them.
 alias \
 	lf="lfub" \
@@ -64,19 +67,13 @@ alias \
 	tremc="tremc" \
 	tremt="td-toggle" \
 	YT="youtube-viewer" \
-	# sdn="shutdown_wrapper" \
 	sdn="shutdown -h now" \
-	# reboot="reboot_wrapper" \
 	reboot="systemctl reboot" \
 	e="$EDITOR" \
 	v="$EDITOR" \
 	p="pacman" \
 	y="yay" \
 	update="sb-popupgrade" \
-	# update="pacman -Syu --noconfirm ; yay -Syu --noconfirm" \
-	xi="sudo xbps-install" \
-	xr="sudo xbps-remove -R" \
-	xq="xbps-query" \
 	z="zathura"
 
 alias \
