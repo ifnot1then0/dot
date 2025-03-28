@@ -11,6 +11,8 @@ BACKUP_ITEMS=(
   "$HOME/.gnupg"
   "$HOME/.ssh"
   "$HOME/.local/share/password-store"
+  "$HOME/prg/dotgit/bash/arch/system/install_scripts/arch1"
+  "$HOME/prg/dotgit/bash/arch/system/install_scripts/arch2"
   "/etc/hosts"
   "/etc/ssh/sshd_config"
 )
