@@ -1,7 +1,8 @@
 #!/bin/bash
-################################################################################################
-###       Backup script to external device for GPG keys, SSH, passwords, and hosts file      ###
-################################################################################################
+###############################################################################
+###       Backup script to external device for:                             ###
+###       GPG keys, SSH, passwords, hosts, sshd_config, arch1 & arch2       ###
+###############################################################################
 
 # Default mount point
 MOUNT_POINT="/mnt"
@@ -15,6 +16,17 @@ BACKUP_ITEMS=(
   "$HOME/prg/dotgit/bash/arch/system/install_scripts/arch2"
   "/etc/hosts"
   "/etc/ssh/sshd_config"
+)
+
+# Directories and files to set permissions
+PERMISSION_ITEMS=(
+  "/mnt/.gnupg"
+  "/mnt/.ssh"
+  "/mnt/password-store"
+  "/mnt/arch1"
+  "/mnt/arch2"
+  "/mnt/hosts"
+  "/mnt/sshd_config"
 )
 
 # Define log file
@@ -142,7 +154,23 @@ done
 log "Copy operation complete"
 echo "Copy operation complete."
 
-# Step 5: Unmount the device and confirm completion
+# Step 5: Set ownership on backed-up items
+echo "Setting ownership on backed-up items in $MOUNT_POINT..."
+log "Starting ownership setting"
+for item in "${PERMISSION_ITEMS[@]}"; do
+  if [ -e "$item" ]; then
+    log "Setting ownership of $item to code:wheel"
+    if ! sudo chown -R code:wheel "$item" 2>> "$LOGFILE"; then
+      warn "Failed to set ownership of $item"
+    fi
+  else
+    warn "$item does not exist, skipping."
+  fi
+done
+log "Ownership setting complete"
+echo "Ownership setting complete."
+
+# Step 6: Unmount the device and confirm completion
 echo "Unmounting $MOUNT_POINT..."
 if ! sudo umount "$MOUNT_POINT"; then
   error_exit "Failed to unmount $MOUNT_POINT."
