@@ -208,3 +208,32 @@ case "$1" in
         exit 1
         ;;
 esac
+
+# Copy the cloudflare_fix.user.js file
+SOURCE_FILE="$HOME/.config/qutebrowser/greasemonkey/cloudflare_fix.user.js"
+DEST_DIR="$HOME/.local/share/qutebrowser/greasemonkey"
+DEST_FILE="$DEST_DIR/cloudflare_fix.user.js"
+
+# Check if the source file exists
+if [ ! -f "$SOURCE_FILE" ]; then
+    echo "Error: Source file does not exist: $SOURCE_FILE" >&2
+    log "ERROR: Source file does not exist: $SOURCE_FILE"
+    exit 1
+fi
+
+# Ensure the destination directory exists
+if ! mkdir -p "$DEST_DIR" 2>> "$LOGFILE"; then
+    echo "Error: Failed to create destination directory: $DEST_DIR" >&2
+    log "ERROR: Failed to create destination directory: $DEST_DIR"
+    exit 1
+fi
+
+# Copy the file
+if cp "$SOURCE_FILE" "$DEST_FILE" 2>> "$LOGFILE"; then
+    echo "File copied successfully to $DEST_FILE"
+    log "File copied successfully to $DEST_FILE"
+else
+    echo "Error: Failed to copy the file to $DEST_FILE" >&2
+    log "ERROR: Failed to copy the file to $DEST_FILE"
+    exit 1
+fi
