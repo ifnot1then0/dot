@@ -179,7 +179,7 @@ nnoremap <leader>h :call ToggleHiddenAll()<CR>
 " Here leader is ";".
 " So ":vs ;cfz" will expand into ":vs /home/<user>/.config/zsh/.zshrc"
 " if typed fast without the timeout.
-silent! source ~/.config/nvim/shortcuts.vim
+silent! source ${XDG_CONFIG_HOME:-$HOME/.config}/nvim/shortcuts.vim
 
 " Indents word-wrapped lines as much as the 'parent' line
 set breakindent
