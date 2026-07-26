@@ -43,6 +43,8 @@ alias \
 	speed="speedtest -A" \
 	notes="$EDITOR $HOME/.local/share/nvim/vimwiki/index.md" \
 	mail="proton-mail 1>/dev/null 2>/dev/null &" \
+	gdrivePULL="rclone sync gdrive: $HOME/mnt/gdrive --progress --verbose" \
+	gdrivePUSH="rclone sync $HOME/mnt/gdrive gdrive: --progress --verbose" \
 	viewallprograms="pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'" \
 	shortenHistory="py $HOME/prg/dotgit/python/system_scripts/shorten_history_file.py < $HOME/.cache/zsh/history > hist.tmp && mv hist.tmp $HOME/.cache/zsh/history"
 
