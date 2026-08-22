@@ -1,0 +1,40 @@
+#!/bin/bash
+# pipewire-recovery.sh
+# Fixes the common PipeWire lock-file + start-limit failures on LARBS (desk)
+
+set -e
+
+echo "==> Ensuring required packages are installed..."
+sudo pacman -S --needed --noconfirm rtkit pavucontrol
+
+echo "==> Stopping PipeWire services..."
+systemctl --user stop pipewire pipewire-pulse wireplumber 2>/dev/null || true
+
+echo "==> Killing leftover processes..."
+killall -9 pipewire pipewire-pulse wireplumber 2>/dev/null || true
+
+echo "==> Cleaning runtime files..."
+rm -f /run/user/1000/pipewire-0*
+rm -rf /run/user/1000/pulse
+
+echo "==> Resetting failed state..."
+systemctl --user reset-failed pipewire pipewire-pulse wireplumber 2>/dev/null || true
+
+echo "==> Starting services in order..."
+systemctl --user start pipewire
+sleep 1
+systemctl --user start wireplumber
+sleep 1
+systemctl --user start pipewire-pulse
+
+echo ""
+echo "==> Status:"
+systemctl --user is-active pipewire pipewire-pulse wireplumber
+
+echo ""
+echo "==> Current sinks:"
+wpctl status | sed -n '/Sinks:/,/Sources:/p' || true
+
+echo ""
+echo "If the only sink is still HDMI, run:  pavucontrol"
+echo "Then set the Ryzen HD Audio Controller profile to 'Analog Stereo Output'."
